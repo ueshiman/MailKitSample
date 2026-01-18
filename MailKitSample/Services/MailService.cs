@@ -32,7 +32,17 @@ namespace ExchangeMailTest.Services
             var users = await _graphUserService.GetAllUserEmailsAsync();
             foreach (var to in users)
             {
-                await SendTestMailAsync(index, to);
+                Console.WriteLine($"[{index}] Sending mail to {to}...");
+                try
+                {
+                    await SendTestMailAsync(index, to);
+                }
+                catch (Exception)
+                {
+                    // Log the error and continue with the next user
+                    Console.WriteLine($"[{index}] Failed to send mail to {to}. Continuing to next user.");
+                    continue;
+                }
             }
         }
 

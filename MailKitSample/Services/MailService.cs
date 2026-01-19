@@ -57,10 +57,11 @@ namespace ExchangeMailTest.Services
             msg.From.Add(new MailboxAddress("Exchange Tester", user));
             msg.To.Add(new MailboxAddress("", to));
             msg.Subject = $"OAuth2 テストメール #{index}";
+            var startTime = System.Diagnostics.Process.GetCurrentProcess().StartTime;
 
             var body = new TextPart("plain")
             {
-                Text = $"これは自動送信されたテストメール #{index} です。"
+                Text = $"これは自動送信されたテストメール #{index} です。{Environment.NewLine}送信時間　{DateTimeOffset.UtcNow} 開始時間　{startTime}" 
             };
 
             var multipart = new Multipart("mixed") { body };

@@ -25,17 +25,18 @@ var mailService = app.Services.GetRequiredService<IMailService>();
 for (long i = 0; i < long.MaxValue; i++)
 {
     DateTimeOffset dateTime = DateTimeOffset.Now;
-    for (int j = 0; j < 9000; j++)
+    for (int j = 0; j < 330; j++)
     {
         try
         {
             Console.WriteLine($"{dateTime:d}[{i * 10000 + j}] メール送信中...");
             await mailService.SendTestMailAsync(i * 10000 + j);
-            await Task.Delay(new Random().Next(4000, 6000));
+            await Task.Delay(new Random().Next(10000, 20000));
         }
         catch (Exception ex)
         {
             Console.WriteLine($"[{i * 10000 + j}] エラー: {ex.Message}");
+            Console.WriteLine(ex.Message);
             continue;
         }
     }

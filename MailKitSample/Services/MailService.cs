@@ -37,10 +37,11 @@ namespace ExchangeMailTest.Services
                 {
                     await SendTestMailAsync(index, to);
                 }
-                catch (Exception)
+                catch (Exception exception)
                 {
                     // Log the error and continue with the next user
                     Console.WriteLine($"[{index}] Failed to send mail to {to}. Continuing to next user.");
+                    Console.WriteLine(exception.Message);
                     continue;
                 }
             }

@@ -1,11 +1,8 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-using MailKit.Net.Smtp;
+﻿using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
 
-namespace ExchangeMailTest.Services
+namespace MailKitSample.Services
 {
     public class MailService : IMailService
     {
@@ -14,23 +11,25 @@ namespace ExchangeMailTest.Services
         private readonly IAttachmentService _attachmentService;
         private readonly IDeviceCodeAuthenticator _deviceCodeAuthenticator;
         private readonly IGraphUserService _graphUserService;
+        private readonly IConfigurationService _configurationService;
 
 
-        public MailService(ITokenService tokenService, IAttachmentService attachmentService, IDeviceCodeAuthenticator deviceCodeAuthenticator, IGraphUserService graphUserService)
+        public MailService(ITokenService tokenService, IAttachmentService attachmentService, IDeviceCodeAuthenticator deviceCodeAuthenticator, IGraphUserService graphUserService, IConfigurationService configurationService)
         {
             //_config = config;
             _tokenService = tokenService;
             _attachmentService = attachmentService;
             _deviceCodeAuthenticator = deviceCodeAuthenticator;
-            string client = Environment.GetEnvironmentVariable("EXCHANGE_CLIENT_ID") ?? throw new InvalidOperationException("Client ID が環境変数に設定されていません！");
-            string tenant = Environment.GetEnvironmentVariable("EXCHANGE_TENANT_ID") ?? throw new InvalidOperationException("Tenant ID が環境変数に設定されていません！");
+
             _graphUserService = graphUserService;
+            _configurationService = configurationService;
         }
 
         public async Task SendTestMailAsync(long index)
         {
+            string validDomain = _configurationService.ValidDomain ?? throw new InvalidOperationException("ValidDomain が設定されていません！");
             var users = await _graphUserService.GetAllUserEmailsAsync();
-            foreach (var to in users)
+            foreach (var to in users.Where(user => user.EndsWith($"@{validDomain}")).Select(user => user))
             {
                 Console.WriteLine($"[{index}] Sending mail to {to}...");
                 try

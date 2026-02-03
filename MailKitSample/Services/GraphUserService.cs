@@ -1,7 +1,8 @@
-﻿using Microsoft.Identity.Client;
-using System.Net.Http;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 using System.Text.Json;
+using Microsoft.Identity.Client;
+
+namespace MailKitSample.Services;
 
 public class GraphUserService : IGraphUserService
 {
@@ -21,9 +22,14 @@ public class GraphUserService : IGraphUserService
         var emails = new List<string>();
         var endpoint = "users?$select=mail&$top=999"; // 最初の 999 件まで
 
-        HttpClient httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _accessToken);
-        httpClient.BaseAddress = new Uri("https://graph.microsoft.com/v1.0/");
+        HttpClient httpClient = new()
+        {
+            DefaultRequestHeaders =
+            {
+                Authorization = new AuthenticationHeaderValue("Bearer", _accessToken)
+            },
+            BaseAddress = new Uri("https://graph.microsoft.com/v1.0/")
+        };
 
         while (!string.IsNullOrEmpty(endpoint))
         {
@@ -71,10 +77,7 @@ public class GraphUserService : IGraphUserService
             .WithRedirectUri("http://localhost")
             .Build();
 
-        string[] scopes =
-        {
-        "https://graph.microsoft.com/User.Read.All"
-    };
+        string[] scopes = ["https://graph.microsoft.com/User.Read.All"];
 
         var result = await app.AcquireTokenWithDeviceCode(
             scopes,

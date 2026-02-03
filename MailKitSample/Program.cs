@@ -1,9 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+﻿using MailKitSample.Services;
 using Microsoft.Extensions.Configuration;
-using ExchangeMailTest.Services;
-using System;
-using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using PdfSharp.Fonts;
 
 var builder = Host.CreateApplicationBuilder(args);
@@ -14,6 +12,8 @@ builder.Services.AddSingleton<IMailService, MailService>();
 builder.Services.AddSingleton<IAttachmentService, AttachmentService>();
 builder.Services.AddTransient<IDeviceCodeAuthenticator, DeviceCodeAuthenticator>();
 builder.Services.AddTransient<IGraphUserService, GraphUserService>();
+builder.Services.AddSingleton<IConfigurationService, ConfigurationService>();
+builder.Services.AddSingleton<IPromptService, PromptService>();
 
 // PDFSharpのフォントリゾルバを設定
 GlobalFontSettings.FontResolver = PdfFontResolver.Instance;
@@ -50,3 +50,4 @@ for (long i = 0; i < long.MaxValue; i++)
     await Task.Delay(waitTime);
 
 }
+

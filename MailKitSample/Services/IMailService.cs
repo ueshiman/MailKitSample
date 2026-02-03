@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace ExchangeMailTest.Services
+﻿namespace MailKitSample.Services
 {
     public interface IMailService
     {

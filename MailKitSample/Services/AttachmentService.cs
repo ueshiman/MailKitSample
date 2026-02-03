@@ -6,9 +6,10 @@ using PdfSharp.Pdf;
 using System;
 using System.IO;
 using System.Reflection.Metadata;
+using MailKitSample.Services;
 using static System.Net.Mime.MediaTypeNames;
 
-namespace ExchangeMailTest.Services
+namespace MailKitSample.Services
 {
     public class AttachmentService : IAttachmentService
     {

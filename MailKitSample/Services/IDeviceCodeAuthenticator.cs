@@ -1,4 +1,6 @@
-﻿public interface IDeviceCodeAuthenticator
+﻿namespace MailKitSample.Services;
+
+public interface IDeviceCodeAuthenticator
 {
     string AccessToken { get; }
     string Username { get; }

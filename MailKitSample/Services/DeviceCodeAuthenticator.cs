@@ -1,7 +1,6 @@
 ﻿using Microsoft.Identity.Client;
-using System;
-using System.Net;
-using System.Threading.Tasks;
+
+namespace MailKitSample.Services;
 
 public class DeviceCodeAuthenticator : IDeviceCodeAuthenticator
 {
@@ -10,10 +9,10 @@ public class DeviceCodeAuthenticator : IDeviceCodeAuthenticator
         get => GetAccessTokenAsync().Result; 
         private set; 
     }
-    private readonly string[] _scopes = new[] { "https://outlook.office365.com/.default" };
+    private readonly string[] _scopes = ["https://outlook.office365.com/.default"];
 
     public string Username { get; private set; }
-    private IPublicClientApplication _app;
+    private readonly IPublicClientApplication _app;
     public DeviceCodeAuthenticator()
     {
         string clientId = Environment.GetEnvironmentVariable("EXCHANGE_CLIENT_ID") ?? throw new InvalidOperationException("Client ID が環境変数に設定されていません！");
@@ -51,7 +50,7 @@ public class DeviceCodeAuthenticator : IDeviceCodeAuthenticator
 
             var accounts = await _app.GetAccountsAsync();
             _cachedToken = await _app.AcquireTokenSilent(_scopes, accounts.FirstOrDefault())
-                                     .ExecuteAsync();
+                .ExecuteAsync();
         }
         catch (MsalUiRequiredException)
         {

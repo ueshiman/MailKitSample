@@ -3,11 +3,11 @@ using System;
 using System.IO;
 using System.Reflection;
 
-namespace ExchangeMailTest.Services
+namespace MailKitSample.Services
 {
     public class PdfFontResolver : IFontResolver
     {
-        public static readonly PdfFontResolver Instance = new PdfFontResolver();
+        public static readonly PdfFontResolver Instance = new();
 
         public string DefaultFontName => "Arial";
 
@@ -23,9 +23,7 @@ namespace ExchangeMailTest.Services
             if (faceName.Equals("Arial", StringComparison.OrdinalIgnoreCase))
             {
                 //var assembly = Assembly.GetExecutingAssembly();
-                using var stream = assembly.GetManifestResourceStream("MailKitSample.Fonts.arial.ttf");
-                if (stream == null)
-                    throw new InvalidOperationException("Arialフォントリソースが見つかりません。");
+                using var stream = assembly.GetManifestResourceStream("MailKitSample.Fonts.arial.ttf") ?? throw new InvalidOperationException("Arialフォントリソースが見つかりません。");
                 using var ms = new MemoryStream();
                 stream.CopyTo(ms);
                 return ms.ToArray();

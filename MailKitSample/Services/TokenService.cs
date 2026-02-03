@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Client;
 using System.Threading.Tasks;
+using MailKitSample.Services;
 
-namespace ExchangeMailTest.Services
+namespace MailKitSample.Services
 {
     public class TokenService : ITokenService
     {
@@ -18,7 +19,7 @@ namespace ExchangeMailTest.Services
                 .WithTenantId(tenant)
                 .Build();
 
-            var result = await app.AcquireTokenForClient(new[] { "https://outlook.office365.com/.default" }).ExecuteAsync();
+            var result = await app.AcquireTokenForClient(["https://outlook.office365.com/.default"]).ExecuteAsync();
 
             return result.AccessToken;
         }

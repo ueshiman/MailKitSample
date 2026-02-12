@@ -1,11 +1,16 @@
 ﻿using MailKitSample.Services;
-using Microsoft.Extensions.Configuration;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using PdfSharp.Fonts;
 
 var builder = Host.CreateApplicationBuilder(args);
-builder.Configuration.AddJsonFile("appsettings.json");
+// appsettings.json は CreateApplicationBuilder が既定で読むので、通常は AddJsonFile 不要
+// builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+// Application Insightsの有効化
+//builder.Services.AddApplicationInsightsTelemetry(builder.Configuration);
 
 builder.Services.AddSingleton<ITokenService, TokenService>();
 builder.Services.AddSingleton<IMailService, MailService>();
@@ -14,13 +19,51 @@ builder.Services.AddTransient<IDeviceCodeAuthenticator, DeviceCodeAuthenticator>
 builder.Services.AddTransient<IGraphUserService, GraphUserService>();
 builder.Services.AddSingleton<IConfigurationService, ConfigurationService>();
 builder.Services.AddSingleton<IPromptService, PromptService>();
+builder.Services.AddSingleton<IAiMailBuilder, AiMailBuilder>();
+builder.Services.AddSingleton<IPromptDispatcher, PromptDispatcher>();
+builder.Services.AddSingleton<ISampleDataBuilder, SampleDataBuilder>();
 
 // PDFSharpのフォントリゾルバを設定
 GlobalFontSettings.FontResolver = PdfFontResolver.Instance;
 
+// ログ出力の追加
+// ILogger → Application Insights の配線（これが肝）
+builder.Services.AddApplicationInsightsTelemetryWorkerService();
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddApplicationInsights();
 var app = builder.Build();
 
+
+if (args.Length >= 1)
+{
+    int parallelism = 1;
+    int all = int.Parse(args[0]);
+    int count = all/parallelism;
+    Task[] tasks = new Task[parallelism];
+
+    ISampleDataBuilder sampleDataBuilder = app.Services.GetRequiredService<ISampleDataBuilder>();
+    try
+    {
+        Console.WriteLine($"サンプルデータを {count* parallelism} 件生成しています...");
+
+        for(int i = 0; i < parallelism; i++)
+        {
+            tasks[i] = sampleDataBuilder.BuildSampleData(i * count, count, all);
+        }
+        await Task.WhenAll(tasks);
+
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"サンプルデータの生成中にエラーが発生しました: {ex.Message}");
+        return;
+    }
+    return;
+}
+
 var mailService = app.Services.GetRequiredService<IMailService>();
+
 
 for (long i = 0; i < long.MaxValue; i++)
 {
@@ -49,5 +92,23 @@ for (long i = 0; i < long.MaxValue; i++)
     Console.WriteLine($"[{i}] 次の実行まで待機時間: {waitTime}");
     await Task.Delay(waitTime);
 
+}
+
+// アプリケーション終了時に Application Insights のログを強制送信
+var telemetryConfig = app.Services.GetService<TelemetryConfiguration>();
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+
+if (telemetryConfig != null)
+{
+    var telemetryClient = new TelemetryClient(telemetryConfig);
+    telemetryClient.Flush();
+    logger.LogInformation("Application Insights TelemetryClient.Flush() called.");
+    // 送信完了まで待機（最大5秒程度）
+    await Task.Delay(5000);
+    logger.LogInformation("Application Insights log flush wait completed.");
+}
+else
+{
+    logger.LogWarning("TelemetryConfiguration not found. Application Insights flush skipped.");
 }
 

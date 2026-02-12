@@ -8,7 +8,7 @@ namespace MailKitSample.Services
     public  class ConfigurationService : IConfigurationService
     {
         private readonly IConfiguration _configuration;
-        private const string ApiKeyKey = "MailCreateAI";
+        private const string ApiKeyKey = "MailCreateAIKey";
         private const string DeploymentNameKey = "DeploymentName";
         private const string ValidDomainKey = "ValidDomain";
         private const string EndPointKey = "Endpoint";

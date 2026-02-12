@@ -1,0 +1,56 @@
+{
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('18b89e5f-8c6b-4b4b-a2cb-2776aef364c6')/messages(attachments())/$entity",
+  "@odata.etag": "W/\"CQAAABYAAACAG7M8xd/dRJ39ylvlgGuXAABE+orj\"",
+  "id": "AAMkAGIxZGFhOGQ4LTg3NWQtNGIzNS1hNzMxLTIxMzkwZWRlMmU1MABGAAAAAADAbVDeGvnjTZKCBs7HZehiBwCAG7M8xd-dRJ39ylvlgGuXAAAAAAEMAACAG7M8xd-dRJ39ylvlgGuXAABFCjXFAAA=",
+  "createdDateTime": "2026-01-21T22:50:28Z",
+  "lastModifiedDateTime": "2026-01-21T22:50:30Z",
+  "changeKey": "CQAAABYAAACAG7M8xd/dRJ39ylvlgGuXAABE+orj",
+  "categories": [],
+  "receivedDateTime": "2026-01-21T22:50:28Z",
+  "sentDateTime": "2026-01-21T22:06:39Z",
+  "hasAttachments": false,
+  "internetMessageId": "<FI1LVD90BSU4.QHZLKBDGCMFX2@mailkitsenderjp>",
+  "subject": "OAuth2 テストメール #162",
+  "bodyPreview": "これは自動送信されたテストメール #162 です。\r\n送信時間　2026/01/21 22:06:39 +00:00 開始時間　2026/01/22 5:58:49",
+  "importance": "normal",
+  "parentFolderId": "AQMkAGIxZGFhADhkOC04NzVkLTRiMzUtYTczMS0yMTM5MGVkZTJlNTAALgAAA8BtUN4a_eNNkoIGzsdl6GIBAIAbszzF391Enf3KW_WAa5cAAAIBDAAAAA==",
+  "conversationId": "AAQkAGIxZGFhOGQ4LTg3NWQtNGIzNS1hNzMxLTIxMzkwZWRlMmU1MAAQANckfs6gDVxItDa98J5Gd-c=",
+  "conversationIndex": "AQHciyhW1yR+zqANXEi0Nr3wnkZ39w==",
+  "isDeliveryReceiptRequested": null,
+  "isReadReceiptRequested": false,
+  "isRead": false,
+  "isDraft": false,
+  "webLink": "https://outlook.office365.com/owa/?ItemID=AAMkAGIxZGFhOGQ4LTg3NWQtNGIzNS1hNzMxLTIxMzkwZWRlMmU1MABGAAAAAADAbVDeGvnjTZKCBs7HZehiBwCAG7M8xd%2FdRJ39ylvlgGuXAAAAAAEMAACAG7M8xd%2FdRJ39ylvlgGuXAABFCjXFAAA%3D&exvsurl=1&viewmodel=ReadMessageItem",
+  "inferenceClassification": "focused",
+  "body": {
+    "contentType": "text",
+    "content": "これは自動送信されたテストメール #162 です。\r\n送信時間　2026/01/21 22:06:39 +00:00 開始時間　2026/01/22 5:58:49"
+  },
+  "sender": {
+    "emailAddress": {
+      "name": "メール投稿02",
+      "address": "exchangeclient2@ishiharashyouji.onmicrosoft.com"
+    }
+  },
+  "from": {
+    "emailAddress": {
+      "name": "メール投稿02",
+      "address": "exchangeclient2@ishiharashyouji.onmicrosoft.com"
+    }
+  },
+  "toRecipients": [
+    {
+      "emailAddress": {
+        "name": "ジャーナルテスト01",
+        "address": "journaltest01@ishiharashyouji.onmicrosoft.com"
+      }
+    }
+  ],
+  "ccRecipients": [],
+  "bccRecipients": [],
+  "replyTo": [],
+  "flag": {
+    "flagStatus": "notFlagged"
+  },
+  "attachments": []
+}

@@ -1,5 +1,6 @@
 ﻿using MailKit.Net.Smtp;
 using MailKit.Security;
+using Microsoft.Extensions.Logging;
 using MimeKit;
 
 namespace MailKitSample.Services
@@ -12,17 +13,26 @@ namespace MailKitSample.Services
         private readonly IDeviceCodeAuthenticator _deviceCodeAuthenticator;
         private readonly IGraphUserService _graphUserService;
         private readonly IConfigurationService _configurationService;
+        private readonly ILogger<MailService> _logger;
+        private readonly IPromptDispatcher _promptDispatcher;
 
-
-        public MailService(ITokenService tokenService, IAttachmentService attachmentService, IDeviceCodeAuthenticator deviceCodeAuthenticator, IGraphUserService graphUserService, IConfigurationService configurationService)
+        public MailService(
+            ITokenService tokenService,
+            IAttachmentService attachmentService,
+            IDeviceCodeAuthenticator deviceCodeAuthenticator,
+            IGraphUserService graphUserService,
+            IConfigurationService configurationService,
+            ILogger<MailService> logger, IPromptDispatcher promptDispatcher)
         {
             //_config = config;
             _tokenService = tokenService;
             _attachmentService = attachmentService;
             _deviceCodeAuthenticator = deviceCodeAuthenticator;
-
             _graphUserService = graphUserService;
             _configurationService = configurationService;
+            _logger = logger;
+            _promptDispatcher = promptDispatcher;
+            _logger.LogInformation("MailService initialized.");
         }
 
         public async Task SendTestMailAsync(long index)
@@ -31,7 +41,7 @@ namespace MailKitSample.Services
             var users = await _graphUserService.GetAllUserEmailsAsync();
             foreach (var to in users.Where(user => user.EndsWith($"@{validDomain}")).Select(user => user))
             {
-                Console.WriteLine($"[{index}] Sending mail to {to}...");
+                _logger.LogInformation("[{Index}] Sending mail to {To}...", index, to);
                 try
                 {
                     await SendTestMailAsync(index, to);
@@ -39,13 +49,11 @@ namespace MailKitSample.Services
                 catch (Exception exception)
                 {
                     // Log the error and continue with the next user
-                    Console.WriteLine($"[{index}] Failed to send mail to {to}. Continuing to next user.");
-                    Console.WriteLine(exception.Message);
+                    _logger.LogError(exception, "[{Index}] Failed to send mail to {To}. Continuing to next user.", index, to);
                     continue;
                 }
             }
         }
-
 
         public async Task SendTestMailAsync(long index, string to)
         {
@@ -61,7 +69,8 @@ namespace MailKitSample.Services
 
             var body = new TextPart("plain")
             {
-                Text = $"これは自動送信されたテストメール #{index} です。{Environment.NewLine}送信時間　{DateTimeOffset.UtcNow} 開始時間　{startTime}" 
+                //Text = $"これは自動送信されたテストメール #{index} です。{Environment.NewLine}送信時間　{DateTimeOffset.UtcNow} 開始時間　{startTime}" 
+                Text = $"{await _promptDispatcher.GenerateRandomMessageAsync()} {Environment.NewLine}これは自動送信されたテストメール #{index} です。{Environment.NewLine}送信時間　{DateTimeOffset.UtcNow} 開始時間　{startTime}"
             };
 
             var multipart = new Multipart("mixed") { body };
@@ -77,11 +86,11 @@ namespace MailKitSample.Services
                     ContentTransferEncoding = ContentEncoding.Base64,
                     FileName = Path.GetFileName(file)
                 });
-                Console.WriteLine($"[{index}] 添付: {file} to {to}.");
+                _logger.LogInformation("[{Index}] 添付: {File} to {To}.", index, file, to);
             }
             else
             {
-                Console.WriteLine($"[{index}] 通常メール送信 to {to}.");
+                _logger.LogInformation("[{Index}] 通常メール送信 to {To}.", index, to);
             }
 
             msg.Body = multipart;

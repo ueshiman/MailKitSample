@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "MailKitSample": {
+      "commandName": "Project",
+      "commandLineArgs": "10"
+    }
+  }
+}

@@ -2,13 +2,7 @@
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using PdfSharp.Drawing;
-using PdfSharp.Pdf;
-using System;
-using System.IO;
-using System.Reflection.Metadata;
-using MailKitSample.Services;
-using static System.Net.Mime.MediaTypeNames;
-
+    
 namespace MailKitSample.Services
 {
     public class AttachmentService : IAttachmentService

@@ -1,9 +1,11 @@
-﻿using Microsoft.Identity.Client;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Client;
 
 namespace MailKitSample.Services;
 
 public class DeviceCodeAuthenticator : IDeviceCodeAuthenticator
 {
+    private readonly ILogger<DeviceCodeAuthenticator> _logger;
     public string AccessToken
     {
         get => GetAccessTokenAsync().Result; 
@@ -13,8 +15,9 @@ public class DeviceCodeAuthenticator : IDeviceCodeAuthenticator
 
     public string Username { get; private set; }
     private readonly IPublicClientApplication _app;
-    public DeviceCodeAuthenticator()
+    public DeviceCodeAuthenticator(ILogger<DeviceCodeAuthenticator> logger)
     {
+        _logger = logger;
         string clientId = Environment.GetEnvironmentVariable("EXCHANGE_CLIENT_ID") ?? throw new InvalidOperationException("Client ID が環境変数に設定されていません！");
         string tenantId = Environment.GetEnvironmentVariable("EXCHANGE_TENANT_ID") ?? throw new InvalidOperationException("Tenant ID が環境変数に設定されていません！");
 
@@ -43,14 +46,15 @@ public class DeviceCodeAuthenticator : IDeviceCodeAuthenticator
     {
         try
         {
-            if (_cachedToken != null && _cachedToken.ExpiresOn > DateTimeOffset.UtcNow.AddMinutes(5))
+            DateTimeOffset? expiresOn =  _cachedToken?.ExpiresOn;
+            if (_cachedToken is not null )
             {
-                return _cachedToken.AccessToken;
+                if(_cachedToken.ExpiresOn > DateTimeOffset.UtcNow.AddMinutes(5)) return _cachedToken.AccessToken;
+                _logger.LogInformation("現在時間 {DateTimeOffset} : 失効時間 {CachedTokenExpiresOn}", DateTimeOffset.UtcNow, _cachedToken.ExpiresOn);
             }
 
-            var accounts = await _app.GetAccountsAsync();
-            _cachedToken = await _app.AcquireTokenSilent(_scopes, accounts.FirstOrDefault())
-                .ExecuteAsync();
+            IEnumerable<IAccount>? accounts = await _app.GetAccountsAsync();
+            _cachedToken = await _app.AcquireTokenSilent(_scopes, accounts.FirstOrDefault()).ExecuteAsync();
         }
         catch (MsalUiRequiredException)
         {

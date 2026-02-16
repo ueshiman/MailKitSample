@@ -4,6 +4,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Http;
 using PdfSharp.Fonts;
 
 var builder = Host.CreateApplicationBuilder(args);
@@ -22,7 +23,10 @@ builder.Services.AddSingleton<IPromptService, PromptService>();
 builder.Services.AddSingleton<IAiMailBuilder, AiMailBuilder>();
 builder.Services.AddSingleton<IPromptDispatcher, PromptDispatcher>();
 builder.Services.AddSingleton<ISampleDataBuilder, SampleDataBuilder>();
-
+builder.Services.AddHttpClient<IGraphUserService, GraphUserService>(c =>
+{
+    c.BaseAddress = new Uri("https://graph.microsoft.com/v1.0/");
+});
 // PDFSharpのフォントリゾルバを設定
 GlobalFontSettings.FontResolver = PdfFontResolver.Instance;
 
@@ -78,7 +82,7 @@ for (long i = 0; i < long.MaxValue; i++)
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[{i * 10000 + j}] エラー: {ex.Message}");
+            Console.WriteLine($"[{i * 10000 + j}] エラー: {ex.Message} {ex}");
             Console.WriteLine(ex.Message);
             continue;
         }
@@ -90,7 +94,7 @@ for (long i = 0; i < long.MaxValue; i++)
     DateTimeOffset nextRunTime = TimeZoneInfo.ConvertTime(dateTime.AddDays(1).Date.AddHours(9), jst);
     TimeSpan waitTime = nextRunTime - DateTimeOffset.Now;
     Console.WriteLine($"[{i}] 次の実行まで待機時間: {waitTime}");
-    await Task.Delay(waitTime);
+    await Task.Delay(waitTime > TimeSpan.Zero ?  waitTime : TimeSpan.FromHours(1));
 
 }
 

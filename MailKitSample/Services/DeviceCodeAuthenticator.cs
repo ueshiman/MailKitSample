@@ -36,7 +36,7 @@ public class DeviceCodeAuthenticator : IDeviceCodeAuthenticator
             //return Task.FromResult(0);
         }).ExecuteAsync().Result;
 
-        AccessToken = result.AccessToken;
+        _cachedToken = result;
         Username = result.Account.Username;
     }
 
